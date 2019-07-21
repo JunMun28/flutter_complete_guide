@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import 'answer.dart';
+import 'quiz.dart';
+import 'result.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,26 +14,49 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _index = 0;
+  var _finalScore = 0;
 
-  void _printSomething() {
+  void _printSomething(int score) {
+    _finalScore += score;
+
     setState(() {
       _index += 1;
     });
-    print(_index);
   }
 
-  List questions = [
+  void _resetQuiz() {
+    setState(() {
+      _finalScore = 0;
+      _index = 0;
+    });
+  }
+
+  final _questions = const [
     {
       'questionText': 'What\'s your favourite colors?',
-      'answers': ['red', 'blue', 'green', 'yellow']
+      'answers': [
+        {'text': 'red', 'score': 10},
+        {'text': 'blue', 'score': 7},
+        {'text': 'green', 'score': 5},
+        {'text': 'yellow', 'score': 1}
+      ]
     },
     {
       'questionText': 'What\'s your favourite animal?',
-      'answers': ['cat', 'dog', 'lion', 'elephant']
+      'answers': [
+        {'text': 'cat', 'score': 10},
+        {'text': 'dog', 'score': 7},
+        {'text': 'lion', 'score': 5},
+        {'text': 'elephant', 'score': 1}
+      ]
     },
     {
       'questionText': 'What\'s your favourite fruit?',
-      'answers': ['banana', 'apple', 'grape']
+      'answers': [
+        {'text': 'banana', 'score': 10},
+        {'text': 'apple', 'score': 5},
+        {'text': 'grape', 'score': 1}
+      ]
     },
   ];
 
@@ -43,14 +66,13 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: Text('Appbar message'),
         ),
-        body: Column(
-          children: <Widget>[
-            Question(questions[_index]['questionText']),
-            ...(questions[_index]['answers'] as List<String>).map((answer) {
-              return Answer(_printSomething, answer);
-            }).toList()
-          ],
-        ),
+        body: _index < _questions.length
+            ? Quiz(
+                printSomething: _printSomething,
+                index: _index,
+                questions: _questions,
+              )
+            : Result(_finalScore, _resetQuiz),
       ),
     );
   }
